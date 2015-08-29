@@ -6,20 +6,35 @@ import os
 import filecmp
 
 
-rootDir = '/kunden/homepages/11/d251762937/htdocs/proj/python/examples'
-filePathList = []
-comparedList = [] 
+def create_file_paths_list(rootDir):
+    """Create a list of full file paths."""
+    filePathsList = []
+    for dirPath, dirNames, fileNames in os.walk(rootDir):
+        for fileName in fileNames:
+            if fileName:
+                filePathsList.append(os.path.join(dirPath, fileName))
+    return filePathsList
 
-# Create a list of full file paths.
-for dirName, subdirList, fileList in os.walk(rootDir):
-    for file in fileList:
-        if file:
-            filePathList.append(dirName + '/' + file)
+def duplicates_in_list(filePathsList):
+    """Compare every file to every other file and list duplicates"""
 
-# Compare every file to every other file.            
-for file in filePathList:
-    for fileOther in filePathList:
-        isDifferent = filecmp.cmp(file, fileOther, shallow=False)
-        if isDifferent and file != fileOther and file not in comparedList:
-            print(file, fileOther, sep=',')
-            comparedList.append(fileOther)
+    comparedList = []
+    duplicatesList = []
+
+    for file in filePathsList:
+        for fileOther in filePathsList:
+            isDifferent = filecmp.cmp(file, fileOther, shallow=False)
+            if isDifferent and file != fileOther and file not in comparedList:
+                duplicatesList.append([file, fileOther])
+                comparedList.append(fileOther)
+    return duplicatesList
+
+def main():
+
+    filePathsList = create_file_paths_list('/Users/igor/Documents/Projects/python/examples')
+    duplicatesList = duplicates_in_list(filePathsList)
+
+    for x, y in duplicatesList:
+        print(x, y, sep=',')
+
+main()
