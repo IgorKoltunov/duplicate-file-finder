@@ -8,6 +8,7 @@ import filecmp
 
 def create_file_paths_list(rootDir):
     """Create a list of full file paths."""
+
     filePathsList = []
     for dirPath, dirNames, fileNames in os.walk(rootDir):
         for fileName in fileNames:
@@ -16,6 +17,7 @@ def create_file_paths_list(rootDir):
                 if not os.path.islink(fullPath):
                     filePathsList.append(fullPath)
     return filePathsList
+
 
 def duplicates_in_list(filePathsList):
     """Compare every file to every other file and list duplicates"""
@@ -32,6 +34,7 @@ def duplicates_in_list(filePathsList):
         print('\r' + 'Now comparing file', index, 'of', numFiles, end='')
     print('')
     return duplicatesList
+
 
 def main():
 
