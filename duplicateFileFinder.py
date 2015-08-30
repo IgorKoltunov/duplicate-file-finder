@@ -12,7 +12,9 @@ def create_file_paths_list(rootDir):
     for dirPath, dirNames, fileNames in os.walk(rootDir):
         for fileName in fileNames:
             if fileName:
-                filePathsList.append(os.path.join(dirPath, fileName))
+                fullPath = os.path.join(dirPath, fileName)
+                if not os.path.islink(fullPath):
+                    filePathsList.append(fullPath)
     return filePathsList
 
 def duplicates_in_list(filePathsList):
@@ -20,21 +22,28 @@ def duplicates_in_list(filePathsList):
 
     comparedList = []
     duplicatesList = []
-
-    for file in filePathsList:
+    numFiles = len(filePathsList) - 1
+    for index, file in enumerate(filePathsList):
         for fileOther in filePathsList:
-            isDifferent = filecmp.cmp(file, fileOther, shallow=False)
+            isDifferent = filecmp.cmp(file, fileOther, shallow=True)
             if isDifferent and file != fileOther and file not in comparedList:
                 duplicatesList.append([file, fileOther])
                 comparedList.append(fileOther)
+        print('\r' + 'Now comparing file', index, 'of', numFiles, end='')
+    print('')
     return duplicatesList
 
 def main():
 
-    filePathsList = create_file_paths_list('/Users/igor/Documents/Projects/python/examples')
+    if os.path.isfile('results.csv'):
+        return print('Error: results.csv is already present. Delete or rename first')
+
+    filePathsList = create_file_paths_list('/Volumes/MANUAL BKUP/FreeAgentComprehensiveBackup')
     duplicatesList = duplicates_in_list(filePathsList)
 
-    for x, y in duplicatesList:
-        print(x, y, sep=',')
+    resultsFile = open('results.csv', 'w')
+
+    for file, fileOther in duplicatesList:
+        print(file, fileOther, sep=',', file=resultsFile)
 
 main()
